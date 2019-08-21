@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="./js/echarts.js"></script>
+<script type="text/javascript" src="./js/jquery-1.11.0.min.js"></script>
+<body>
+<div id="temp"style="width:800px;height:400px"></div>
+</body>
+<script type="text/javascript">
+    var params = (window.location.search).split("?")[1];
+    var myEchartstemp = echarts.init(document.getElementById("temp"));
+    //alert(params);
+    var str = params.split('&');
+    //alert(str);
+    var stn = str[0].substring(4);
+    var wban =str[1].substring(5);
+    $(function()
+    {
+        $.ajax({
+            type: "GET",
+            url: '/daimao/search?stn='+stn+'&wban='+wban,
+            dataType:"json",
+            success: function(data) {
+                //console.log(data.temp);
+                var tempdata = JSON.parse(data.temp);
+
+                myEchartstemp.setOption(option = {
+                    //标题
+                    title:{
+                        text:'温度类数据展示图表',
+                        textAlign:'auto',
+                    },
+                    tooltip:{//提示框组件
+                        trigger:'axis'
+                    },
+                    xAxis:{
+                        data:tempdata.map(function(item){
+                            return item.date;
+                        })
+                    },
+                    yAxis:{},
+                    series:[
+                        {
+                            name:'平均温度',
+                            type:'line',
+                            data:tempdata.map(function(item){
+                                return item.temp;
+                            })
+                        },
+
+                        {
+                            name:'平均露点',
+                            type:'line',
+                            data:tempdata.map(function(item){
+                                return item.dewp;
+                            })
+                        },
+                        {
+                            name:'最高温度',
+                            type:'line',
+                            data:tempdata.map(function(item){
+                                return item.max;
+                            })
+                        },
+                        {
+                            name:'最低温度',
+                            type:'line',
+                            data:tempdata.map(function(item){
+                                return item.min;
+                            })
+                        },
+                    ]
+                });
+            }
+        });
+    });
+
+</script>
+</html>

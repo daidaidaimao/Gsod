@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.daimao.mapper.WeatherMapper">
+
+
+    <select id="getData"  resultType="cn.daimao.pojo.Weather2016">
+        select * from weather2016
+        where STN=#{stn} and wban=#{wban}
+    </select>
+
+</mapper>

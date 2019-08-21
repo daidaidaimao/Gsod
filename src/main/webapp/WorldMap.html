@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="./js/echarts.js"></script>
+<script type="text/javascript" src="./js/jquery-1.11.0.min.js"></script>
+<body>
+<div id="main" style="height:900px;"></div>
+</body>
+<script type="text/javascript">
+    //初始化echarts内置对象
+    var myEcharts = echarts.init(document.getElementById('main'));
+    //指定世界地图数据的路径
+    var mapInfoUrl="data/world.json";
+    var mydata=[];
+    //通过Jquery的get方式获取世界地图数据
+    //回调函数：当访问第一个参数的时候，会返回数据
+    $.get(mapInfoUrl,function(data){
+        //注册地图
+        echarts.registerMap('world',data);
+        //指定配置项
+        var option = {
+            //提示框组件
+            tooltip:{
+                trigger:'item',
+                formatter:'{b}',
+
+            },
+            //添加GEO组件
+            geo:[{
+                name:'世界地图',
+                type:'map',
+                map:'world',
+                roam:true,//拖动、缩放
+                //定义地图区域样式
+                itemStyle:{
+                    normal:{  //普通状态
+                        areaColor:'#323c48',  //区域颜色
+                        borderColor:'#111'
+                    }
+                },
+            }],
+
+            backgroundColor: '#404a59',
+
+            //将数据显示为对应的图表
+            series:[{
+                name:'站点',
+                type:'scatter',
+                coordinateSystem:'geo',
+                data:mydata,
+                large:false,
+                largeThreshold:2000,
+                itemStyle:{
+                    normal:{color: '#66ccff'}
+                },
+                postEffect: {
+                    enable: true
+                },
+                symbolSize: 10,
+                dimensions: ['lng', 'lat'],
+            }],
+        };
+        myEcharts.on('click',function(params){
+            //先将参数输出
+            // alert(params.value);
+            //对得到的参数进行切分
+            var str = params.name.split('-');
+
+            //判断如果str的长度大于等于2，表示点击的是一个站点
+            if(str.length>= 2){
+                //需要将站点编号传递给temp.html
+                window.location.href="temp_Info.html?station="+params.name+"?year="+2016;
+            }else{
+                //否则点击就是地图
+                //alert("当前国家为"+str);
+                window.location.href="index2.html?country="+str+"?year="+2016;
+            }
+        });
+
+        myEcharts.on('click',function(params){
+            //先将参数输出
+            // alert(params.value);
+            //对得到的参数进行切分
+            var str = params.name.split('-');
+            //alert(str[0]+str[1]);
+            //判断如果str的长度大于等于2，表示点击的是一个站点
+            if(str.length>= 2){
+                //需要将站点编号传递给temp.html
+                window.location.href="StationWeather.html?stn="+str[0]+"&wban="+str[1];
+            }else{
+                //否则点击就是地图
+                alert("点的不是站点请重点")
+
+        }
+        });
+
+
+
+
+
+        myEcharts.setOption(option);
+        var URL="daimao/worldMap2";
+        $.get(URL,function(data){
+            data = JSON.stringify(data);
+            stationdata = JSON.parse(data);
+            console.log(stationdata);
+            myEcharts.setOption(option={
+                series:[{
+                    name:'站点',
+                    type:'scatter',
+                    coordinateSystem:'geo',
+                    data:stationdata
+                }]
+            });
+        });
+    });
+
+</script>
+</html>
